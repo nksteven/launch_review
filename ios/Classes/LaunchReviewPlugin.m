@@ -22,9 +22,12 @@
                                      message:@"Empty app id"
                                      details:nil]);
         } else {
-        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tinder://"]]) {
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tinder://"]]
+         && [appId isEqualToString:@"547702041"]) {
+
                         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"tinder://"]];
-                    } else {
+
+        } else {
             NSString *iTunesLink;
             if ([call.arguments[@"write_review"] boolValue]) {
               iTunesLink = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%@?action=write-review", appId];
