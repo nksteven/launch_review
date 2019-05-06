@@ -8,6 +8,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import android.content.Intent;
 import android.net.Uri;
 import android.content.ActivityNotFoundException;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 /**
  * LaunchReviewPlugin
@@ -38,9 +40,30 @@ public class LaunchReviewPlugin implements MethodCallHandler {
         appPackageName = mRegistrar.activity().getPackageName();
       }
 
+      boolean isAppInstalled = false;
+      PackageInfo packageInfo = null;
       try {
-          mRegistrar.activity().startActivity(new Intent(Intent.ACTION_VIEW,
-              Uri.parse("market://details?id=" + appPackageName)));
+        packageInfo = mRegistrar.activity().getPackageManager().getPackageInfo(appPackageName, 0);
+      } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+      } finally {
+        isAppInstalled = packageInfo != null;
+      }
+
+      try {
+        Intent intent;
+
+        if (isAppInstalled) {
+          PackageManager packageManager = mRegistrar.activity().getPackageManager();
+          intent = packageManager.getLaunchIntentForPackage(appPackageName);
+        } else {
+          intent = new Intent(Intent.ACTION_VIEW,
+                  Uri.parse("market://details?id=" + appPackageName));
+        }
+
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        mRegistrar.activity().startActivity(intent);
       } catch (ActivityNotFoundException e) {
           mRegistrar.activity().startActivity(new Intent(Intent.ACTION_VIEW,
               Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
