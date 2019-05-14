@@ -10,4 +10,9 @@ class LaunchReview {
     await _channel.invokeMethod(
         'launch', {'android_id': androidAppId, 'ios_id': iOSAppId, 'write_review': writeReview});
   }
+
+  static void launchBrower({String url}) async {
+    await _channel.invokeMethod(
+        'launchBrower', {'url': url});
+  }
 }

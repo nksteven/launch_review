@@ -70,7 +70,17 @@ public class LaunchReviewPlugin implements MethodCallHandler {
       }
 
       result.success(null);
-    } else {
+    } else if(call.method.equals("launchBrower")){
+      String url = call.argument["url"];
+      if (url != null && url != "") {
+        Uri uri = Uri.parse(url);
+        Intent uriIntent = new Intent(Intent.ACTION_VIEW, uri);
+        mRegistrar.activity().startActivity(uriIntent);
+        result.success(null);
+      } else {
+        result.error("exception", "the argument url is must be required", null);
+      }
+    }else{
       result.notImplemented();
     }
   }
