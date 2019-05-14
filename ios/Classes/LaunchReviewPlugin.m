@@ -22,28 +22,42 @@
                                      message:@"Empty app id"
                                      details:nil]);
         } else {
-        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tinder://"]]
-         && [appId isEqualToString:@"547702041"]) {
-
-                        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"tinder://"]];
-
-        } else {
-            NSString *iTunesLink;
-            if ([call.arguments[@"write_review"] boolValue]) {
-              iTunesLink = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%@?action=write-review", appId];
+            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tinder://"]]
+                && [appId isEqualToString:@"547702041"]) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"tinder://"]];
             } else {
-              iTunesLink = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%@", appId];
+                NSString *iTunesLink;
+                if ([call.arguments[@"write_review"] boolValue]) {
+                    iTunesLink = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%@?action=write-review", appId];
+                } else {
+                    iTunesLink = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%@", appId];
+                }
+                
+                NSURL* itunesURL = [NSURL URLWithString:iTunesLink];
+                if ([[UIApplication sharedApplication] canOpenURL:itunesURL]) {
+                    [[UIApplication sharedApplication] openURL:itunesURL];
+                }
             }
-
-            NSURL* itunesURL = [NSURL URLWithString:iTunesLink];
-            if ([[UIApplication sharedApplication] canOpenURL:itunesURL]) {
-              [[UIApplication sharedApplication] openURL:itunesURL];
-            }
-          }
-
             result(nil);
         }
-    } else {
+    } else if ([@"launchBrower" isEqualToString:call.method]) {
+        NSString *appURLString = call.arguments[@"url"];
+        if (appURLString == (NSString *)[NSNull null]) {
+            result([FlutterError errorWithCode:@"ERROR"
+                                       message:@"App url cannot be null"
+                                       details:nil]);
+        } else if ([appURLString length] == 0) {
+            result([FlutterError errorWithCode:@"ERROR"
+                                       message:@"Empty app url"
+                                       details:nil]);
+        } else {
+            NSURL* appURL = [NSURL URLWithString:appURLString];
+            if ([[UIApplication sharedApplication] canOpenURL:appURL]) {
+                [[UIApplication sharedApplication] openURL:appURL];
+            }
+        }
+    }
+    else {
         result(FlutterMethodNotImplemented);
     }
 }
