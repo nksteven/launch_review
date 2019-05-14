@@ -71,7 +71,7 @@ public class LaunchReviewPlugin implements MethodCallHandler {
 
       result.success(null);
     } else if(call.method.equals("launchBrower")){
-      String url = call.argument["url"];
+      String url = call.argument("url");
       if (url != null && url != "") {
         Uri uri = Uri.parse(url);
         Intent uriIntent = new Intent(Intent.ACTION_VIEW, uri);
